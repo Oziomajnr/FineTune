@@ -1,4 +1,5 @@
 // swift-tools-version: 5.7
+// FineTune vendors wadetregaskis/FluidMenuBarExtra 1.5.1 for its macOS 15.1 startup fix.
 
 import PackageDescription
 
@@ -19,6 +20,10 @@ let package = Package(
         .target(
             name: "FluidMenuBarExtra",
             dependencies: []
+        ),
+        .testTarget(
+            name: "FluidMenuBarExtraTests",
+            dependencies: ["FluidMenuBarExtra"]
         )
     ]
 )

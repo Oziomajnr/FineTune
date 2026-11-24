@@ -76,6 +76,14 @@ final class FluidMenuBarExtraWindow<Content: View>: NSPanel {
         standardWindowButton(.zoomButton)?.isHidden = true
 
         contentView = visualEffectView
+        // Creating the hosting view here re-enters SwiftUI while it builds the
+        // Settings scene on macOS 15.1. Let that scene finish first.
+        DispatchQueue.main.async { [weak self] in
+            self?.installHostedContent()
+        }
+    }
+
+    private func installHostedContent() {
         visualEffectView.addSubview(hostingView)
         setContentSize(hostingView.intrinsicContentSize)
 
