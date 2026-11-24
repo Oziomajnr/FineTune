@@ -1,0 +1,51 @@
+name: Build the macOS 15.1 fork
+
+on:
+  push:
+    branches: [codex/verify-macos-15-1]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/fix-macos-15-1-startup
+          persist-credentials: false
+      - name: Record the source revision
+        id: source
+        run: echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Build the development app
+        run: |
+          xcodebuild -quiet build -project FineTune.xcodeproj -scheme FineTune \
+            -configuration Release -destination 'generic/platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/FineTuneBuild" \
+            -onlyUsePackageVersionsFromResolvedFile \
+            PRODUCT_BUNDLE_IDENTIFIER=io.github.Oziomajnr.FineTune \
+            MARKETING_VERSION=1.7.0 CURRENT_PROJECT_VERSION=36 \
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO
+          app="$RUNNER_TEMP/FineTuneBuild/Build/Products/Release/FineTune.app"
+          codesign --verify --deep --strict "$app"
+          ditto -c -k --keepParent "$app" "$RUNNER_TEMP/FineTune.zip"
+      - name: Upload the app for testing on macOS 15.1
+        uses: actions/upload-artifact@v4
+        with:
+          name: FineTune-${{ steps.source.outputs.revision }}
+          path: ${{ runner.temp }}/FineTune.zip
+          if-no-files-found: error
+          retention-days: 14
+      - name: Run FineTune’s unit tests
+        run: |
+          xcodebuild -quiet test -project FineTune.xcodeproj -scheme FineTune \
+            -destination 'platform=macOS' -configuration Debug \
+            -derivedDataPath "$RUNNER_TEMP/FineTuneBuild" \
+            -onlyUsePackageVersionsFromResolvedFile -skip-testing:FineTuneUITests \
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO
