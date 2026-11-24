@@ -4,7 +4,7 @@
 
 Control the volume of every app independently, boost quiet ones up to 4x, route audio to different speakers, and shape your sound with EQ and headphone correction. Lives in your menu bar. Free and open-source.
 
-<a href="https://github.com/ronitsingh10/FineTune/releases/latest/download/FineTune.dmg"><img src="assets/download-badge.svg" alt="Download for macOS" height="48"/></a>
+<a href="https://github.com/Oziomajnr/FineTune/actions?query=branch%3Acodex%2Fverify-macos-15-1"><img src="assets/download-badge.svg" alt="Browse builds for macOS 15.1" height="48"/></a>
 
 <br clear="all"/>
 
@@ -28,15 +28,12 @@ Control the volume of every app independently, boost quiet ones up to 4x, route 
   <img src="assets/screenshot-eq.png" alt="FineTune showing the Brave Browser app row expanded with the EQ panel open and a Vocal Clarity preset selected" width="700">
 </p>
 
-## Install
+## Install this macOS 15.1 build
 
-**Homebrew** (recommended)
+This fork backports the menu-bar startup fix to FineTune 1.7.0. Its development build uses manual updates. [Build history](https://github.com/Oziomajnr/FineTune/actions?query=branch%3Acodex%2Fverify-macos-15-1)
 
-```bash
-brew install --cask finetune
-```
-
-**Manual** — [Download latest release](https://github.com/ronitsingh10/FineTune/releases/latest)
+1. Sign in to GitHub, open the latest successful **Build the macOS 15.1 fork** run, and download the artifact named **FineTune-** followed by the source commit.
+2. Unzip the artifact, then open `FineTune.zip`. Copy the app to Applications as `FineTune Local.app`.
 
 ## Quick Start
 
