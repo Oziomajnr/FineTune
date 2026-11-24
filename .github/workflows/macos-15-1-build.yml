@@ -23,6 +23,11 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
+      - name: Resolve the project packages
+        run: |
+          xcodebuild -quiet -resolvePackageDependencies -project FineTune.xcodeproj \
+            -scheme FineTune -derivedDataPath "$RUNNER_TEMP/FineTuneBuild"
+          cp FineTune.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved "$RUNNER_TEMP/Package.resolved"
       - name: Build the development app
         run: |
           xcodebuild -quiet build -project FineTune.xcodeproj -scheme FineTune \
@@ -39,9 +44,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: FineTune-${{ steps.source.outputs.revision }}
-          path: ${{ runner.temp }}/FineTune.zip
+          path: |
+            ${{ runner.temp }}/FineTune.zip
+            ${{ runner.temp }}/Package.resolved
           if-no-files-found: error
           retention-days: 14
+      - name: Test menu-bar window initialization
+        run: swift test --package-path Packages/FluidMenuBarExtra
       - name: Run FineTune’s unit tests
         run: |
           xcodebuild -quiet test -project FineTune.xcodeproj -scheme FineTune \
