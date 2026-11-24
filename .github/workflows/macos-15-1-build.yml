@@ -36,8 +36,14 @@ jobs:
             -onlyUsePackageVersionsFromResolvedFile \
             PRODUCT_BUNDLE_IDENTIFIER=io.github.Oziomajnr.FineTune \
             MARKETING_VERSION=1.7.0 CURRENT_PROJECT_VERSION=36 \
+            SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) FINETUNE_MANUAL_UPDATES' \
+            OTHER_LDFLAGS='$(inherited) -Wl,-dead_strip_dylibs' \
             CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO
           app="$RUNNER_TEMP/FineTuneBuild/Build/Products/Release/FineTune.app"
+          if otool -L "$app/Contents/MacOS/FineTune" | grep -F 'Sparkle.framework/'; then
+            echo "The local build still depends on the Developer ID updater."
+            exit 1
+          fi
           codesign --verify --deep --strict "$app"
           ditto -c -k --keepParent "$app" "$RUNNER_TEMP/FineTune.zip"
       - name: Upload the app for testing on macOS 15.1
