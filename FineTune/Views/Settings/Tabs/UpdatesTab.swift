@@ -5,6 +5,15 @@ import SwiftUI
 struct UpdatesTab: View {
     @ObservedObject var updateManager: UpdateManager
 
+    #if FINETUNE_MANUAL_UPDATES
+    var body: some View {
+        Form {
+            LabeledContent("Update method", value: "Manual")
+            Link("View builds on GitHub", destination: URL(string: "https://github.com/Oziomajnr/FineTune/actions")!)
+        }
+        .formStyle(.grouped)
+    }
+    #else
     private var lastCheckDescription: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
         if let date = updateManager.lastUpdateCheckDate {
@@ -54,4 +63,5 @@ struct UpdatesTab: View {
         }
         .scrollIndicators(.never)
     }
+    #endif
 }

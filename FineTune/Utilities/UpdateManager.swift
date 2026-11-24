@@ -1,6 +1,11 @@
 // FineTune/Utilities/UpdateManager.swift
 import Foundation
 import Combine
+
+#if FINETUNE_MANUAL_UPDATES
+/// Locally signed builds have no Developer ID team for Sparkle library validation.
+final class UpdateManager: ObservableObject {}
+#else
 import Sparkle
 
 /// Manages app updates via Sparkle
@@ -49,3 +54,4 @@ final class UpdateManager: NSObject, ObservableObject {
         updaterController.updater.lastUpdateCheckDate
     }
 }
+#endif
